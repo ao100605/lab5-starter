@@ -32,8 +32,20 @@ void handle_increment(int client_sock) {
 	write(client_sock, message, strlen(message));
 }
 
+void handle_add(int client_sock, char* query) {
+	char message[BUFFER_SIZE];
+	int value;
+	sscanf(query, "value=%d", &value);
+
+	num += value;
+	snprintf(message, BUFFER_SIZE, "Added %d to number. Number is now: %d\n", value, num);
+	write(client_sock, HTTP_200_OK, strlen(HTTP_200_OK));
+	write(client_sock, message, strlen(message));
+}
+
 void handle_response(char *request, int client_sock) {
 	char path[256];
+	char query[256];
 
 	printf("\nSERVER LOG: Got request: \"%s\"\n", request);
 
@@ -50,6 +62,12 @@ void handle_response(char *request, int client_sock) {
 	}
 	else if(strcmp(path, "/increment") == 0) {
 		handle_increment(client_sock);
+		return;
+	}
+	else if(strncmp(path, "/add", 4) == 0) {
+		char* after_qmark = strstr(path, "?" + 1);
+		strcpy(query, after_qmark);
+		handle_add(client_sock, query);
 		return;
 	}	
 	// Handle error if path is not coded
