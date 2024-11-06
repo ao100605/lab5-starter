@@ -65,7 +65,7 @@ void handle_response(char *request, int client_sock) {
 		return;
 	}
 	else if(strncmp(path, "/add", 4) == 0) {
-		char* after_qmark = strstr(path, "?" + 1);
+		char* after_qmark = strstr(path, "?") + 1;
 		strcpy(query, after_qmark);
 		handle_add(client_sock, query);
 		return;
